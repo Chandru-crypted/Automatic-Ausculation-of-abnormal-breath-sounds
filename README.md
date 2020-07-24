@@ -6,7 +6,7 @@
 * [Inspiration](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Inspiration)
 * [Working](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Working) 
 
-## Introduction(link)
+## Introduction
 This project tries a shot at classifying abnormal breath sounds, feel free to explore the below mentioned links to understand about abnoramaliity of lung or breath sounds 
 
 https://www.respiratorytherapyzone.com/breath-sounds-guide/

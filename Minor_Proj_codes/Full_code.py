@@ -41,6 +41,8 @@ elif the_breath <= 0.3 :
     classification_of_breath = 'Mild breath'
 else:
     classification_of_breath = 'Soft breath' 
+# Filtering 
+
 # calculating the envelope using the idea of a simple diode envelope detector
 # The capacitor in the circuit above stores charge on the rising edge and releases
 # it slowly through the resistor when the input signal amplitude falls. 
@@ -92,6 +94,8 @@ plt.title("THE LPF FILTERED ENVELOPE DATA")
 plt.plot(time_arr[peaks], y[peaks], "x", label = '{}'.format(classification_of_breath))
 plt.legend()
 plt.show()
+
+
 # finding the I:E ratio  
 # to find the i:E ratio the 1st peak is skipped as it will not give the cprrect value 
 # duration of inhale 
@@ -102,6 +106,7 @@ ratio = int(0)
 for i in range(1, len(iistoe) -1,2):
     ratio = round(iistoe[i] / iistoe[i + 1])
     print("The I:E ratio is {} : 1 ".format(ratio))
+
 # for the discontinous abnormalities we have to compare the amplitiudes 
 # of the inspiration adn expiaration
 comp_amp = 0.0

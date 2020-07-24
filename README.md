@@ -1,9 +1,10 @@
 # Automatic-Ausculation-of-abnormal-breath-sounds
 
 ## Table of contents
-* [Introduction](link)
-* [Technologies](link)
-* [Inspiration](link)
+* [Introduction](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Introduction)
+* [Technologies](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Technologies)
+* [Inspiration](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Inspiration)
+* [Working](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Working) 
 
 ## Introduction(link)
 This project tries a shot at classifying abnormal breath sounds, feel free to explore the below mentioned links to understand about abnoramaliity of lung or breath sounds 
@@ -12,14 +13,14 @@ https://www.respiratorytherapyzone.com/breath-sounds-guide/
 
 https://www.practicalclinicalskills.com/heart-lung-sounds-reference-guide-details/71/Wheeze 
 
-## Technology 
+## Technologies
 * Python 
 * wavfile from scipy.io 
 * numpy
 * matplotlib
 
 
-# Inspiration 
+## Inspiration 
 https://drive.google.com/file/d/1N8N9VMoAXP7eUU-TqlKf85qLXHAbE-bt/view?usp=sharing
 
 ## Working

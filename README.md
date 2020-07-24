@@ -1,10 +1,10 @@
 # Automatic-Ausculation-of-abnormal-breath-sounds
 
 ## Table of contents
-* [Introduction](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Introduction)
-* [Technologies](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Technologies)
-* [Inspiration](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Inspiration)
-* [Working](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#Working) 
+* [Introduction](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#introduction)
+* [Technologies](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#technologies)
+* [Inspiration](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#inspiration)
+* [Working](https://github.com/Chandru-crypted/Automatic-Ausculation-of-abnormal-breath-sounds#automatic-ausculation-of-abnormal-breath-sounds#working) 
 
 ## Introduction
 This project tries a shot at classifying abnormal breath sounds, feel free to explore the below mentioned links to understand about abnoramaliity of lung or breath sounds 

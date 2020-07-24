@@ -1,0 +1,99 @@
+import math
+from scipy.io import wavfile
+import matplotlib.pyplot as plt
+import numpy as np
+from Lib import wave  # wave is a std found in Lib in python default no need to install anything
+import scipy.signal as ss
+
+def wavfile_read():
+    fs, data = wavfile.read(r"C:\Users\chand\Desktop\Bronchial.wav", 'r')  # fs = sampfreq data = data in wav file
+                                                                            # r means raw string
+    return fs, data
+
+
+def div_into_2_channels(data):
+    data0 = data[:, 0]  # gives the data of 1st channel into data0 array
+    return data0
+
+
+def dB_value(data0):
+    a1 = np.zeros(len(data0))  # default this is in float type only1
+    n = len(data0) - 10
+    ten = 10 ** (-6)
+    p0 = 20 * ten
+    p1 = float(0.0)
+    i = int(0)
+    while i <= n:
+        p1 = (data0[i] / p0)
+        if (p1 < 0):
+            p1 = -p1
+            a1[i] = (math.log(p1, 10))
+            a1[i] = -(a1[i])
+        elif (p1 > 0):
+            a1[i] = (math.log(p1, 10))
+        else:
+            p1 = 1
+            a1[i] = (math.log(p1, 10))
+        i = i + 1
+    return a1
+
+def gen_time_arr(fs, noofsamp):
+    t = fs / noofsamp
+    t1 = np.linspace(0, t, noofsamp)
+    return t1
+
+def plott(a1, t1):
+    plt.plot(t1, a1)
+    plt.xlabel('TIME AXIS')
+    plt.ylabel('THE AMPLTITUDE')
+    plt.show()
+
+def downsampling(a1, fs):
+    if fs > 10000 :
+        dsfact = 10   # this is the downsampling factor
+        d1 = ss.decimate(a1, dsfact)
+        for i in range(3):  # loop running for 2 times
+            d1 = ss.decimate(d1, dsfact)
+        return d1, dsfact
+    elif (fs < 10000) and (fs > 1000):
+        dsfact = 10
+        d1 = ss.decimate(a1, dsfact)
+        return d1, dsfact
+
+
+def butter_lowpass(cutoff, fs, order):
+    nyq_freq = fs * 0.5
+    new_cutoff = cutoff / nyq_freq
+    b, a = ss.butter(order, new_cutoff, btype='low', analog=False)
+    return b,a
+
+
+def butter_lowpass_filter(data, fs):
+    order = 3 # the order of the filter
+    # fs the sampling frequency of the wave that has to be filtered
+    cutoff = 130 # The freq in which u want the cut off
+    b, a = butter_lowpass(cutoff, fs, order)
+    y = ss.lfilter(b, a, data)
+    return y
+
+
+fs, data = wavfile_read()
+data0 = div_into_2_channels(data)
+noofsamp1 = len(data0)
+a1 = data0
+t1 = gen_time_arr(fs,noofsamp1)
+plott(a1, t1)
+print(fs)
+d1, dsfact = downsampling(a1, fs)
+nfs = fs / dsfact  # New sampling freq
+print(nfs)
+td1 = gen_time_arr(nfs, len(d1))
+plott(d1, td1)
+df1 = butter_lowpass_filter(d1, nfs)
+plott(df1, td1)
+analytic_signal = ss.hilbert(df1)
+amplitude_envelope = np.abs(analytic_signal)
+for i in range(len(df1) - 2):
+    analytic_signal[i] = math.sqrt((math.pow(analytic_signal[i],2)) + (math.pow(df1[i],2)))
+plott(analytic_signal, td1)
+

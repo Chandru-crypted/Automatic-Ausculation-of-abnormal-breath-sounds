@@ -1,0 +1,133 @@
+# Code for normilasation and envelope and finding the peaks 
+# imports 
+from scipy.io import wavfile as wavf  # for reading the wav file 
+import matplotlib.pyplot as plt       # for plotting 
+import numpy as np                    # for numpy arrays 
+import scipy.signal as ss 
+# reading the wav file and copying the data in channel 1 
+file_name = r'Breath_sounds\BronchiVesicular.wav'
+sampfreq, data = wavf.read(file_name, 'r')  # data is a numpy array 
+# sometimes it happens that file is corrupted4 in the case of crackles_coarse 
+try:
+    data_chan_1 = data[:, 0] 
+except: 
+    data_chan_1 = data
+o_noofsmp = len(data_chan_1)   # the original number of samples 
+copy_data_chan_1 = data_chan_1.copy()  # deep copy 
+# for normalising the array +1 to 0 , neglecting the negative values in the
+# array copy_data_chan_1
+p_max = 32767.00  # the max positive value in 16bit (2^15)
+norm = []  # creating a empty list 
+# normalising 
+for i in range(o_noofsmp):  # o_nofsmp cuz , the number of samples 
+    if copy_data_chan_1[i] > 0:
+        norm.append(copy_data_chan_1[i] / p_max) 
+    elif copy_data_chan_1[i] <= 0 :
+        norm.append(0.00)
+orig_time = o_noofsmp / sampfreq
+time_arr = np.linspace(0, orig_time, o_noofsmp)
+plt.plot(time_arr, norm)
+plt.xlabel('TIME AXIS')
+plt.ylabel('THE AMPLTITUDE')
+plt.title("THE NORMALISED DATA")
+plt.show() 
+norm = np.asarray(norm)  # converting the list into a numpy array 
+the_breath = np.amax(norm)  # with this maxx value i can classfiy the breaths as 
+                      # hard breath or mdium breath or soft breath   
+classification_of_breath = ''   
+if the_breath >= 0.7:
+    classification_of_breath = 'Hard breath'
+elif the_breath <= 0.3 :
+    classification_of_breath = 'Mild breath'
+else:
+    classification_of_breath = 'Soft breath' 
+# calculating the envelope using the idea of a simple diode envelope detector
+# The capacitor in the circuit above stores charge on the rising edge and releases
+# it slowly through the resistor when the input signal amplitude falls. 
+# The diode in series rectifies the incoming signal, allowing current flow only
+# when the positive input terminal is at a higher potential than the negative
+#  input terminal.
+env = []
+interval_length = 5000
+for i in range(0, o_noofsmp, interval_length):
+    maxx = 0
+    if interval_length + i < o_noofsmp : 
+        for j in range(i, (interval_length + i)):
+            if norm[j] > maxx :
+                maxx = norm[j]
+    else:
+        break 
+    env.append(maxx)
+e_noofsmp = len(env)
+time_arr = np.linspace(0, orig_time, e_noofsmp)
+plt.plot(time_arr, env)
+plt.xlabel('TIME AXIS')
+plt.ylabel('THE AMPLTITUDE')
+plt.title("THE ENVELOPE DATA")
+plt.show() 
+# butter low pass filter  
+cutoff = 1.3
+n_samp_freq = e_noofsmp / orig_time
+nyq_freq = n_samp_freq * 0.5 
+n_cutoff = cutoff / nyq_freq 
+b, a = ss.butter(4, n_cutoff, btype = 'low', analog = False)
+y = ss.filtfilt(b, a, env)
+y = np.asarray(y)
+peaks, _ = ss.find_peaks(y,0.00)  # finding the peaks it returns the indices 
+                                      # in which peaks occurs 
+discard_peaks = []  # discarding the peaks which are close to each other
+                    # causing reduncancny storing the indices of redunancy 
+                    # element and then deleting using the np.delete 
+iistoe = []
+for i in range(len(peaks) -1):
+    if (time_arr[peaks[i + 1]] - time_arr[peaks[i]]) <= 0.50:
+        discard_peaks.append(i+1)
+peaks = np.delete(peaks, discard_peaks)
+for i in range(len(peaks)):
+    print("The peaks occurs at time {}".format(time_arr[peaks[i]]))
+plt.plot(time_arr, y, label = 'envelope')
+plt.xlabel('TIME AXIS')
+plt.ylabel('THE AMPLTITUDE')
+plt.title("THE LPF FILTERED ENVELOPE DATA")
+plt.plot(time_arr[peaks], y[peaks], "x", label = '{}'.format(classification_of_breath))
+plt.legend()
+plt.show()
+# finding the I:E ratio  
+# to find the i:E ratio the 1st peak is skipped as it will not give the cprrect value 
+# duration of inhale 
+for i in range(len(peaks) - 1):
+    iistoe.append(time_arr[peaks[i + 1]] - time_arr[peaks[i]])
+print(iistoe)
+ratio = int(0)
+for i in range(1, len(iistoe) -1,2):
+    ratio = round(iistoe[i] / iistoe[i + 1])
+    print("The I:E ratio is {} : 1 ".format(ratio))
+# for the discontinous abnormalities we have to compare the amplitiudes 
+# of the inspiration adn expiaration
+comp_amp = 0.0
+c = 0 
+for i in range(0, len(peaks) - 1, 2):
+    comp_amp =  round(y[peaks[i]] / y[peaks[i+1]])
+comp_amp = round(comp_amp)
+print("The ratio of the length of the inhale and exhale is {}".format(comp_amp))
+# final classification 
+if (classification_of_breath == 'Hard breath' and ratio == 1.0 )and (comp_amp < 20) :
+    print("It is Bronchial - Normal")
+    print("It should be heard over  over anterior chest and heard over tracheal area")
+    print("Please report if not heard over there")
+elif classification_of_breath == 'Mild breath' and ratio == 2.0 : 
+    print("It is Vesicular - Normal")
+    print("auscultated anteriorly and posteriorly and heard over peripheral lung fields")
+    print("Please report if not heard over there")
+elif (classification_of_breath == 'Soft breath' and ratio == 1.0) and(comp_amp < 2) :
+    print("It is BronchiVesicular - Normal")
+    print("anteriorly: 1st and 2nd intercostal space near the sternum \nposteriorly: between the scapulae")
+    print("Please report if not heard over there")
+elif classification_of_breath == 'Mild breath' and ratio == 1.0 : 
+    print("It is Wheeze - continous sound abnormality")
+elif (classification_of_breath == 'Hard breath' and ratio == 1.0 )and (comp_amp > 20):
+    print("It is crackles Coarse - abnormal")
+elif (classification_of_breath == 'Soft breath' and ratio == 1.0 )and (comp_amp > 2):
+    print("It is crackles Fine - abnormal")
+else:
+    print("Unable to classify --- please report")

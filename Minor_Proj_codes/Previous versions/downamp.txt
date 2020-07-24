@@ -1,0 +1,21 @@
+from scipy.io import wavfile as wavf
+import matplotlib.pyplot as plt 
+import numpy as np 
+import scipy.signal as ss 
+
+file_name = r'C:\Users\chand\Desktop\Vesicular.wav'
+sampfreq, data = wavf.read(file_name, 'r')  # data is a numpy array 
+data_chan_1 = data[:, 0] 
+o_noofsmp = len(data_chan_1)
+copy_data_chan_1 = data_chan_1.copy()  # deep copy 
+
+t = o_noofsmp / sampfreq
+n_smpfreq = sampfreq // 100 
+s_noofsmp = int(t * n_smpfreq)
+copy_data_chan_1 = ss.resample(copy_data_chan_1, s_noofsmp)
+t1 = np.linspace(0, t, s_noofsmp)
+plt.plot(t1, copy_data_chan_1)
+plt.xlabel('TIME AXIS')
+plt.ylabel('THE AMPLTITUDE')
+plt.show() 
+print(len(copy_data_chan_1))

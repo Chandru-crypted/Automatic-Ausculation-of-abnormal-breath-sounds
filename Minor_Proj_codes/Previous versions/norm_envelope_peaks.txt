@@ -1,0 +1,77 @@
+# Code for normilasation and envelope and finding the peaks 
+# imports 
+from scipy.io import wavfile as wavf  # for reading the wav file 
+import matplotlib.pyplot as plt       # for plotting 
+import numpy as np                    # for numpy arrays 
+import scipy.signal as ss 
+# reading the wav file and copying the data in channel 1 
+file_name = r'C:\Users\chand\Desktop\Vesicular.wav'
+sampfreq, data = wavf.read(file_name, 'r')  # data is a numpy array 
+# sometimes it happens that file is corrupted in the case of crackles_coarse 
+try:
+    data_chan_1 = data[:, 0] 
+except: 
+    data_chan_1 = data
+o_noofsmp = len(data_chan_1)   # the original number of samples 
+copy_data_chan_1 = data_chan_1.copy()  # deep copy 
+# for normalising the array +1 to 0 , neglecting the negative values in the
+# array copy_data_chan_1
+p_max = 32767.00  # the max positive value in 16bit (2^15)
+norm = []  # creating a empty list 
+# normalising 
+for i in range(o_noofsmp):  # o_nofsmp cuz , the number of samples 
+    if copy_data_chan_1[i] > 0:
+        norm.append(copy_data_chan_1[i] / p_max) 
+    elif copy_data_chan_1[i] <= 0 :
+        norm.append(0.00)
+orig_time = o_noofsmp / sampfreq
+time_arr = np.linspace(0, orig_time, o_noofsmp)
+plt.plot(time_arr, norm)
+plt.xlabel('TIME AXIS')
+plt.ylabel('THE AMPLTITUDE')
+plt.title("THE NORMALISED DATA")
+plt.show() 
+norm = np.asarray(norm)  # converting the list into a numpy array 
+the_breath = np.amax(norm)  # with this maxx value i can classfiy the breaths as 
+                      # hard breath or mdium breath or soft breath 
+# calculating the envelope using the idea of a simple diode envelope detector
+# The capacitor in the circuit above stores charge on the rising edge and releases
+# it slowly through the resistor when the input signal amplitude falls. 
+# The diode in series rectifies the incoming signal, allowing current flow only
+# when the positive input terminal is at a higher potential than the negative
+#  input terminal.
+env = []
+interval_length = 5000
+for i in range(0, o_noofsmp, interval_length):
+    maxx = 0
+    if interval_length + i < o_noofsmp : 
+        for j in range(i, (interval_length + i)):
+            if norm[j] > maxx :
+                maxx = norm[j]
+    else:
+        break 
+    env.append(maxx)
+e_noofsmp = len(env)
+time_arr = np.linspace(0, orig_time, e_noofsmp)
+plt.plot(time_arr, env)
+plt.xlabel('TIME AXIS')
+plt.ylabel('THE AMPLTITUDE')
+plt.title("THE ENVELOPE DATA")
+plt.show() 
+# butter low pass filter  
+cutoff = 0.5
+n_samp_freq = e_noofsmp / orig_time
+nyq_freq = n_samp_freq * 0.5 
+n_cutoff = cutoff / nyq_freq 
+b, a = ss.butter(4, n_cutoff, btype = 'low', analog = False)
+y = ss.filtfilt(b, a, env)
+y = np.asarray(y)
+print(y.mean())
+peaks, _ = ss.find_peaks(y,y.mean())  # finding the peaks it returns the indices 
+                                      # in which peaks occurs 
+plt.plot(time_arr, y)
+plt.xlabel('TIME AXIS')
+plt.ylabel('THE AMPLTITUDE')
+plt.title("THE ENVELOPE DATA")
+plt.plot(time_arr[peaks], y[peaks], "x")
+plt.show()

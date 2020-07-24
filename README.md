@@ -24,7 +24,8 @@ https://www.practicalclinicalskills.com/heart-lung-sounds-reference-guide-detail
 https://drive.google.com/file/d/1N8N9VMoAXP7eUU-TqlKf85qLXHAbE-bt/view?usp=sharing
 
 ## Working
-Our code logic was based on the unique characterstics of the abnormalities, basic flow of the main programme is given below : 
+Our code logic was based on the unique characterstics of each abnormalities.
+Basic flow of the main programme is given below : 
 
 1) Normalisation  
 2) Classify the sound as "hard" or "soft" breath
